@@ -6,15 +6,10 @@ namespace AuthDemo.Extensions;
 
 public static class HostingExtensions
 {
-    public static void AddOpenApi(this IServiceCollection services)
+    public static void AddAuthenticationAndAuthorization(this IHostApplicationBuilder builder)
     {
-        services.AddEndpointsApiExplorer();
-        //services.AddSwaggerGen();
-    }
-    public static void MapOpenApi(this WebApplication app)
-    {
-        //app.UseSwagger();
-        //app.UseSwaggerUI();
+        builder.AddAuthentication();
+        builder.Services.AddAuthorization();
     }
 
     public static void AddAuthentication(this IHostApplicationBuilder builder)

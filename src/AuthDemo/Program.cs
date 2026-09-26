@@ -1,4 +1,6 @@
 
+using AuthDemo.Endpoints;
+using AuthDemo.Extensions;
 using Scalar.AspNetCore;
 
 namespace AuthDemo;
@@ -10,6 +12,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
+        builder.AddAuthenticationAndAuthorization();
 
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -27,9 +30,10 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
-
+        app.MapProductEndpoints();
         app.MapControllers();
 
         app.Run();
