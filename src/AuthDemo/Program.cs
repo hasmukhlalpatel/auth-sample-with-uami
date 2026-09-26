@@ -14,7 +14,7 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
+        builder.Logging.AddConsole();
         // Add services to the container.
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IUserService, UserService>();
@@ -35,7 +35,7 @@ public class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi("/openapi/{documentName}.yaml"); // GET /openapi/v1.yaml
+            //app.MapOpenApi("/openapi/{documentName}.yaml"); // GET /openapi/v1.yaml
             app.MapOpenApi("/openapi/{documentName}.json"); // GET /openapi/v1.json
                                                             // app.MapScalarApiReference();              // GET /scalar  — interactive UI
             app.MapScalarApiReference(options =>
