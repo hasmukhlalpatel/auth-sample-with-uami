@@ -1,6 +1,8 @@
 
 using AuthDemo.Endpoints;
 using AuthDemo.Extensions;
+using AuthDemo.Models;
+using AuthDemo.Services;
 using Scalar.AspNetCore;
 
 namespace AuthDemo;
@@ -12,6 +14,8 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
+        builder.Services.AddScoped<ITokenService, TokenService>();
+        builder.Services.AddScoped<IUserService, UserService>();
         builder.AddAuthenticationAndAuthorization();
 
         builder.Services.AddControllers();
@@ -32,6 +36,22 @@ public class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.MapPost("/api/auth/login", (LoginRequest req, IUserService users, ITokenService tokens, IConfiguration config) =>
+        {
+            var (valid, roles) = users.Validate(req.Username, req.Password);
+            if (!valid)
+                return Results.Unauthorized();
+
+            var token = tokens.GenerateToken(req.Username, roles);
+            var expiry = DateTime.UtcNow.AddMinutes(int.Parse(config["Jwt:ExpiryMinutes"]!));
+
+            return Results.Ok(new LoginResponse(token, req.Username, roles, expiry));
+        })
+        .WithTags("Auth")
+        .WithName("Login")
+        .WithSummary("Exchange credentials for a JWT")
+        .AllowAnonymous();
 
         app.MapProductEndpoints();
         app.MapControllers();
